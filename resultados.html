@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados da Votação</title>
+
+    <!-- Adicione o Bootstrap via CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Adicione o Chart.js via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Estilos personalizados */
+        #resultsDisplay {
+            text-align: center;
+        }
+
+        .bold-text {
+            font-size: 20px;
+        }
+
+        .header-row {
+            font-weight: bold;
+            font-size: 26px;
+        }
+
+        #pieChart {
+            max-width: 900px; /* Defina o tamanho máximo desejado para o gráfico de pizza */
+            margin: 60px auto; /* Centraliza o gráfico na página */
+        }
+
+        .trophy-emoji {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-size: cover;
+        }
+
+        #clearVotesBtn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="resultsContainer" class="bg-light p-4 rounded">
+        <h2 class="text-center">Resultados da Votação</h2>
+        <div id="resultsDisplay" class="text-center">
+            <!-- Os resultados serão exibidos aqui como uma tabela -->
+        </div>
+    </div>
+
+    <button id="clearVotesBtn" onclick="confirmClearVotes()">Limpar Votos</button>
+
+    <script>
+        // Adicione lógica para exibir os resultados na página de resultados
+        function displayResults() {
+            // Recupere os resultados do armazenamento local
+            const storedResults = JSON.parse(localStorage.getItem('votingResults')) || {};
+
+            // Se houver resultados, crie uma tabela e exiba os votos de cada candidato
+            if (Object.keys(storedResults).length > 0) {
+                const resultsDisplay = document.getElementById('resultsDisplay');
+                const table = document.createElement('table');
+                table.classList.add('table', 'table-bordered', 'mt-4');
+
+                // Cabeçalho da tabela
+                const headerRow = table.createTHead().insertRow();
+                const candidateHeader = headerRow.insertCell(0);
+                const votesHeader = headerRow.insertCell(1);
+
+                // Aplica a classe de estilo ao cabeçalho da tabela
+                candidateHeader.innerHTML = `<span class="header-row">Candidato</span>`;
+                votesHeader.innerHTML = `<span class="header-row">Votos</span>`;
+
+                // Organize os resultados de maior para menor
+                const sortedResults = Object.entries(storedResults).sort((a, b) => b[1] - a[1]);
+
+                // Linhas da tabela
+                sortedResults.forEach(([candidate, votes], index) => {
+                    const row = table.insertRow();
+                    const candidateCell = row.insertCell(0);
+                    const votesCell = row.insertCell(1);
+
+                    // Adiciona emoji de troféu ao primeiro colocado
+                    const trophyEmoji = index === 0 ? '🏆':'';
+
+                    // Aplica a classe de estilo para dados em negrito e fonte maior
+                    candidateCell.innerHTML = `<span class="bold-text">${trophyEmoji} Candidato ${candidate}</span>`;
+                    votesCell.innerHTML = `<span class="bold-text">${votes}</span>`;
+                });
+
+                resultsDisplay.appendChild(table);
+
+                // Crie um gráfico de pizza
+                createPieChart(sortedResults);
+            } else {
+                // Caso contrário, exiba uma mensagem indicando que não há resultados ainda
+                const noResultsMessage = document.createElement('p');
+                noResultsMessage.textContent = 'Ainda não há votos registrados.';
+                resultsDisplay.appendChild(noResultsMessage);
+            }
+        }
+
+        // Exiba os resultados ao carregar a página
+        displayResults();
+
+        // Função para criar um gráfico de pizza com Chart.js
+        function createPieChart(sortedResults) {
+            const canvas = document.createElement('canvas');
+            canvas.id = 'pieChart';
+            canvas.width = 600; /* Reduz o tamanho do gráfico de pizza */
+            canvas.height = 600; /* Reduz o tamanho do gráfico de pizza */
+            resultsDisplay.appendChild(canvas);
+
+            const ctx = canvas.getContext('2d');
+            const labels = sortedResults.map(([candidate]) => `Candidato ${candidate}`);
+            const data = sortedResults.map(([, votes]) => votes);
+
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(255, 205, 86)',
+                            'rgb(54, 162, 235)',
+                            'rgb(75, 192, 192)',
+                            'rgb(153, 102, 255)',
+                            'rgb(255, 159, 64)'
+                        ]
+                    }]
+                },
+                options: {
+                    legend: {
+                        display: true,
+                        position: 'right',
+                        labels: {
+                            fontSize: 14,
+                            fontStyle: 'bold'
+                        }
+                    },
+                    tooltips: {
+                        callbacks: {
+                            label: function (tooltipItem, data) {
+                                const dataset = data.datasets[tooltipItem.datasetIndex];
+                                const total = dataset.data.reduce((previousValue, currentValue) => previousValue + currentValue);
+                                const currentValue = dataset.data[tooltipItem.index];
+                                const percentage = Math.round((currentValue / total) * 100);
+                                return `${data.labels[tooltipItem.index]}: ${percentage}%`;
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Função para confirmar a ação de limpar votos
+        function confirmClearVotes() {
+            const password = prompt('Digite a senha para confirmar a ação:', '');
+
+            // Substitua 'sua_senha_aqui' pela senha desejada
+            if (password === 'senha123') {
+                // Limpar votos
+                localStorage.removeItem('votingResults');
+                // Recarregar a página para refletir as alterações
+                location.reload();
+            } else {
+                alert('Senha incorreta. Ação cancelada.');
+            }
+        }
+    </script>
+</body>
+</html>
