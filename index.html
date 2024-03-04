@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Adicione estas linhas ao head do seu HTML -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: url('https://3.bp.blogspot.com/-LCMtkNXs-SY/U5j1j1yIpXI/AAAAAAAAADM/4uN5pBTrbIw/s1600/Sem+T%C3%ADtulo-1.jpg') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Arial', sans-serif;
+        }
+
+        #app {
+            background-color: rgba(255, 255, 255, 0.9); /* Cor do fundo do container com opacidade */
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1); /* Sombra para um visual mais formal */
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 400px; /* Largura máxima para manter um layout responsivo */
+            margin: 50px auto; /* Centraliza o container na página */
+            animation: fadeIn 0.8s ease-in-out; /* Adiciona uma animação de fade-in */
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .btn-primary,
+        .btn-light {
+            font-size: 18px;
+            padding: 15px 20px;
+            transition: background-color 0.3s, color 0.3s; /* Adiciona transição suave */
+            border-radius: 8px;
+            display: block;
+            width: 100%; /* Faz os botões ocuparem 100% da largura */
+        }
+
+        .btn-primary {
+            background-color: #4CAF50; /* Verde escuro */
+            border: 2px solid #45a049; /* Borda mais escura */
+        }
+
+        .btn-light {
+            background-color: #f8f9fa; /* Branco suave */
+            border: 2px solid #dee2e6; /* Borda mais clara */
+            color: #495057; /* Texto escuro */
+        }
+
+        .btn-primary:hover {
+            background-color: #45a049; /* Verde mais claro ao passar o mouse */
+        }
+
+        .btn-light:hover {
+            background-color: #e2e6ea; /* Branco mais claro ao passar o mouse */
+        }
+
+        #candidateImages {
+            text-align: center; /* Centraliza as imagens */
+        }
+
+        .candidate-image {
+            max-width: 100%;
+            margin-bottom: 10px; /* Adiciona um espaçamento entre as imagens */
+        }
+    </style>
+    <title>Sistema de Votação</title>
+</head>
+<body>
+    <div id="app">
+        <div class="header">
+            <h1 class="text-primary">Sistema de Votação</h1>
+            <p class="text-muted">Vote de maneira fácil e segura</p>
+        </div>
+        <form id="votingForm">
+            <div class="form-group">
+                <label for="candidate">Escolha o Candidato:</label>
+                <select id="candidate" class="form-control" onchange="updateCandidateImage()" required>
+                    <option value="" disabled selected>Selecione um candidato</option>
+                    <option value="candidato1">Candidato 1</option>
+                    <option value="candidato2">Candidato 2</option>
+                    <option value="candidato3">Candidato 3</option>
+                    <!-- Adicione mais candidatos conforme necessário -->
+                </select>
+            </div>
+            <audio id="votarSound" src="C:\Users\FelipeNolleDeOliveir\Downloads\URNA.mp3"></audio>
+            <button type="button" onclick="submitVote()" class="btn btn-primary">Votar</button>
+            
+            <!-- Adicione o botão "Votar em Branco" -->
+            <button type="button" onclick="submitBlankVote()" class="btn btn-light text-dark mt-2">Votar em Branco</button>
+        </form>
+        <div id="result" class="mt-4">
+            <div id="candidateImages">
+                <img data-candidate="candidato1" src="images/R.jfif" alt="Imagem do Candidato 1" class="candidate-image img-fluid rounded">
+                <img data-candidate="candidato2" src="images/Sociedade Esportiva Pauferrense.png" alt="Imagem do Candidato 2" class="candidate-image img-fluid rounded">
+                <img data-candidate="candidato3" src="images/OIP (2).jfif" alt="Imagem do Candidato 3" class="candidate-image img-fluid rounded">
+                <!-- Adicione mais imagens conforme necessário -->
+            </div>
+        </div>
+        <div class="mt-4">
+            <label for="password">Digite a senha para ver os resultados:</label>
+            <input type="password" id="password" class="form-control" />
+            <button type="button" onclick="showResults()" class="btn btn-success mt-2">Ver Resultados</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+    <script>
+        // Adicione a função para votar em branco
+        function submitBlankVote() {
+            // Emite o som ao clicar
+            document.getElementById('votarSound').play();
+            
+            // Contabiliza o voto em branco
+            const votingResults = JSON.parse(localStorage.getItem('votingResults')) || {};
+            votingResults['branco'] = (votingResults['branco'] || 0) + 1;
+            localStorage.setItem('votingResults', JSON.stringify(votingResults));
+
+            // Atualiza a tabela de resultados na outra página (você precisa implementar a outra página)
+            // updateResultsTable(); 
+        }
+    </script>
+</body>
+</html>
