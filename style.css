@@ -1,0 +1,41 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f2f2f2;
+}
+
+#app {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #d9d9d9;
+    border-radius: 8px;
+    margin-top: 50px;
+}
+
+h1 {
+    color: #004080;
+}
+
+form {
+    margin-top: 20px;
+}
+
+button {
+    background-color: #004080;
+    color: #ffffff;
+}
+.candidate-image {
+    width: 150px; /* Defina o tamanho desejado */
+    height: auto; /* Mantenha a proporção original da imagem */
+    max-width: 100%; /* Garanta responsividade limitando a largura máxima */
+    display: none; /* Inicialmente, esconda todas as imagens */
+}
+#resultsContainer {
+    margin-top: 20px;
+}
+.float-right {
+    float: right;
+}
+
+/* Adicione estilos adicionais conforme necessário */
