@@ -26,7 +26,7 @@ button {
     color: #ffffff;
 }
 .candidate-image {
-    width: 150px; /* Defina o tamanho desejado */
+    width: 450px; /* Defina o tamanho desejado */
     height: auto; /* Mantenha a proporção original da imagem */
     max-width: 100%; /* Garanta responsividade limitando a largura máxima */
     display: none; /* Inicialmente, esconda todas as imagens */
@@ -39,3 +39,16 @@ button {
 }
 
 /* Adicione estilos adicionais conforme necessário */
+
+/* Adicione essas regras para tornar o site responsivo */
+@media only screen and (max-width: 600px) {
+    #app {
+        max-width: 100%;
+    }
+
+    .btn-primary,
+    .btn-light {
+        font-size: 16px;
+        padding: 10px 15px;
+    }
+}

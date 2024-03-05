@@ -84,18 +84,26 @@
             max-width: 100%;
             margin-bottom: 10px; /* Adiciona um espaçamento entre as imagens */
         }
+
+        #message {
+            text-align: center;
+            color: red;
+            font-size: 16px;
+            margin-top: 10px;
+            display: none; /* Inicialmente escondido */
+        }
     </style>
     <title>Sistema de Votação</title>
 </head>
 <body>
     <div id="app">
         <div class="header">
-            <h1 class="text-primary">Grêmio Estudantil</h1>
-            <p class="text-muted">E.E "Anna Calvo de Godoy Professora"</p>
+            <h1 class="text-primary">Sistema de Votação</h1>
+            <p class="text-muted">Vote de maneira fácil e segura</p>
         </div>
         <form id="votingForm">
             <div class="form-group">
-                <label for="candidate">Escolha uma Chapa:</label>
+                <label for="candidate">Escolha o Candidato:</label>
                 <select id="candidate" class="form-control" onchange="updateCandidateImage()" required>
                     <option value="" disabled selected>Selecione um candidato</option>
                     <option value="candidato1">Candidato 1</option>
@@ -105,10 +113,13 @@
                 </select>
             </div>
             <audio id="votarSound" src="URNA.mp3"></audio>
-            <button type="button" onclick="submitVote()" class="btn btn-primary">Votar</button>
+            <button type="button" onclick="submitVote()" class="btn btn-primary" id="votarButton">Votar</button>
             
             <!-- Adicione o botão "Votar em Branco" -->
-            <button type="button" onclick="submitBlankVote()" class="btn btn-light text-dark mt-2">Votar em Branco</button>
+            <button type="button" onclick="submitBlankVote()" class="btn btn-light text-dark mt-2" id="votarBrancoButton">Votar em Branco</button>
+
+            <!-- Exibe a mensagem -->
+            <div id="message"></div>
         </form>
         <div id="result" class="mt-4">
             <div id="candidateImages">
@@ -128,18 +139,79 @@
     <script src="script.js"></script>
 
     <script>
+        var lastVoteTime = 0; // Armazena o tempo da última votação
+
         // Adicione a função para votar em branco
         function submitBlankVote() {
-            // Emite o som ao clicar
-            document.getElementById('votarSound').play();
-            
-            // Contabiliza o voto em branco
-            const votingResults = JSON.parse(localStorage.getItem('votingResults')) || {};
-            votingResults['branco'] = (votingResults['branco'] || 0) + 1;
-            localStorage.setItem('votingResults', JSON.stringify(votingResults));
+            var currentTime = new Date().getTime();
+            // Verifica se passou pelo menos 5 segundos desde a última votação
+            if (currentTime - lastVoteTime >= 5000) {
+                // Emite o som ao clicar
+                document.getElementById('votarSound').play();
+                
+                // Contabiliza o voto em branco
+                const votingResults = JSON.parse(localStorage.getItem('votingResults')) || {};
+                votingResults['branco'] = (votingResults['branco'] || 0) + 1;
+                localStorage.setItem('votingResults', JSON.stringify(votingResults));
 
-            // Atualiza a tabela de resultados na outra página (você precisa implementar a outra página)
-            // updateResultsTable(); 
+                // Atualiza a tabela de resultados na outra página (você precisa implementar a outra página)
+                // updateResultsTable();
+
+                // Atualiza o tempo da última votação
+                lastVoteTime = currentTime;
+
+                // Desabilita o botão por 5 segundos
+                document.getElementById('votarBrancoButton').disabled = true;
+                document.getElementById('message').innerText = 'Aguarde 5 segundos antes de votar novamente.';
+
+                setTimeout(function() {
+                    document.getElementById('votarBrancoButton').disabled = false;
+                    // Limpa a mensagem após 5 segundos
+                    document.getElementById('message').innerText = '';
+                }, 5000);
+            } else {
+                alert('Aguarde pelo menos 5 segundos antes de votar novamente.');
+            }
+        }
+
+        // Adicione a função para votar
+        function submitVote() {
+            var currentTime = new Date().getTime();
+            // Verifica se passou pelo menos 5 segundos desde a última votação
+            if (currentTime - lastVoteTime >= 5000) {
+                // Verifica se um candidato foi escolhido
+                var selectedCandidate = document.getElementById('candidate').value;
+                if (!selectedCandidate || selectedCandidate === "") {
+                    alert('Escolha um candidato antes de votar.');
+                    return;
+                }
+
+                // Emite o som ao clicar
+                document.getElementById('votarSound').play();
+                
+                // Contabiliza o voto
+                const votingResults = JSON.parse(localStorage.getItem('votingResults')) || {};
+                votingResults[selectedCandidate] = (votingResults[selectedCandidate] || 0) + 1;
+                localStorage.setItem('votingResults', JSON.stringify(votingResults));
+
+                // Atualiza a tabela de resultados na outra página (você precisa implementar a outra página)
+                // updateResultsTable();
+
+                // Atualiza o tempo da última votação
+                lastVoteTime = currentTime;
+
+                // Desabilita o botão por 5 segundos
+                document.getElementById('votarButton').disabled = true;
+                document.getElementById('message').innerText = 'Aguarde 5 segundos antes de votar novamente.';
+
+                setTimeout(function() {
+                    document.getElementById('votarButton').disabled = false;
+                    // Limpa a mensagem após 5 segundos
+                    document.getElementById('message').innerText = '';
+                }, 5000);
+            } else {
+                alert('Aguarde pelo menos 5 segundos antes de votar novamente.');
+            }
         }
     </script>
 </body>
