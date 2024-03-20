@@ -95,7 +95,7 @@
                     const trophyEmoji = index === 0 ? '🏆':'';
 
                     // Aplica a classe de estilo para dados em negrito e fonte maior
-                    candidateCell.innerHTML = `<span class="bold-text">${trophyEmoji} Candidato ${candidate}</span>`;
+                    candidateCell.innerHTML = `<span class="bold-text">${trophyEmoji} ${candidate}</span>`;
                     votesCell.innerHTML = `<span class="bold-text">${votes}</span>`;
                 });
 
@@ -123,7 +123,7 @@
             resultsDisplay.appendChild(canvas);
 
             const ctx = canvas.getContext('2d');
-            const labels = sortedResults.map(([candidate]) => `Candidato ${candidate}`);
+            const labels = sortedResults.map(([candidate]) => ` ${candidate}`);
             const data = sortedResults.map(([, votes]) => votes);
 
             new Chart(ctx, {
