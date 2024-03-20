@@ -48,7 +48,8 @@
         }
 
         .btn-primary,
-        .btn-light {
+        .btn-light,
+        .btn-danger {
             font-size: 18px;
             padding: 15px 20px;
             transition: background-color 0.3s, color 0.3s; /* Adiciona transição suave */
@@ -68,12 +69,22 @@
             color: #495057; /* Texto escuro */
         }
 
+        .btn-danger {
+            background-color: #dc3545; /* Vermelho */
+            border: 2px solid #dc3545; /* Borda vermelha */
+            color: #fff; /* Texto branco */
+        }
+
         .btn-primary:hover {
             background-color: #45a049; /* Verde mais claro ao passar o mouse */
         }
 
         .btn-light:hover {
             background-color: #e2e6ea; /* Branco mais claro ao passar o mouse */
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333; /* Vermelho mais escuro ao passar o mouse */
         }
 
         #candidateImages {
@@ -111,10 +122,13 @@
                 </select>
             </div>
             <audio id="votarSound" src="URNA.mp3"></audio>
-            <button type="button" onclick="submitVote()" class="btn btn-primary" id="votarButton">Votar</button>
+            <button type="button" onclick="submitVote()" class="btn btn-primary" id="votarButton">CONFIRMAR</button>
             
             <!-- Adicione o botão "Votar em Branco" -->
-            <button type="button" onclick="submitBlankVote()" class="btn btn-light text-dark mt-2" id="votarBrancoButton">Votar em Branco</button>
+            <button type="button" onclick="submitBlankVote()" class="btn btn-light text-dark mt-2" id="votarBRANCOButton">BRANCO</button>
+
+            <!-- Adicione o botão "Votar Nulo" -->
+            <button type="button" onclick="submitNullVote()" class="btn btn-danger mt-2" id="votarNULOButton">NULO</button>
 
             <!-- Exibe a mensagem -->
             <div id="message"></div>
@@ -127,7 +141,8 @@
         </div>
         <div class="mt-4">
             <label for="password">Digite a senha para ver os resultados:</label>
-            <input type="password" id="password" class="form-control" />
+            <input type="password" id="password" class="form-control"
+            />
             <button type="button" onclick="showResults()" class="btn btn-success mt-2">Ver Resultados</button>
         </div>
     </div>
@@ -147,7 +162,7 @@
                 
                 // Contabiliza o voto em branco
                 const votingResults = JSON.parse(localStorage.getItem('votingResults')) || {};
-                votingResults['branco'] = (votingResults['branco'] || 0) + 1;
+                votingResults['BRANCO'] = (votingResults['BRANCO'] || 0) + 1;
                 localStorage.setItem('votingResults', JSON.stringify(votingResults));
 
                 // Atualiza a tabela de resultados na outra página (você precisa implementar a outra página)
@@ -157,11 +172,11 @@
                 lastVoteTime = currentTime;
 
                 // Desabilita o botão por 5 segundos
-                document.getElementById('votarBrancoButton').disabled = true;
+                document.getElementById('votarBRANCOButton').disabled = true;
                 document.getElementById('message').innerText = 'Aguarde 5 segundos antes de votar novamente.';
 
                 setTimeout(function() {
-                    document.getElementById('votarBrancoButton').disabled = false;
+                    document.getElementById('votarBRANCOButton').disabled = false;
                     // Limpa a mensagem após 5 segundos
                     document.getElementById('message').innerText = '';
                 }, 5000);
@@ -170,24 +185,17 @@
             }
         }
 
-        // Adicione a função para votar
-        function submitVote() {
+        // Adicione a função para votar nulo
+        function submitNullVote() {
             var currentTime = new Date().getTime();
             // Verifica se passou pelo menos 5 segundos desde a última votação
             if (currentTime - lastVoteTime >= 5000) {
-                // Verifica se um candidato foi escolhido
-                var selectedCandidate = document.getElementById('candidate').value;
-                if (!selectedCandidate || selectedCandidate === "") {
-                    alert('Escolha um candidato antes de votar.');
-                    return;
-                }
-
                 // Emite o som ao clicar
                 document.getElementById('votarSound').play();
                 
-                // Contabiliza o voto
+                // Contabiliza o voto nulo
                 const votingResults = JSON.parse(localStorage.getItem('votingResults')) || {};
-                votingResults[selectedCandidate] = (votingResults[selectedCandidate] || 0) + 1;
+                votingResults['NULO'] = (votingResults['NULO'] || 0) + 1;
                 localStorage.setItem('votingResults', JSON.stringify(votingResults));
 
                 // Atualiza a tabela de resultados na outra página (você precisa implementar a outra página)
@@ -197,11 +205,11 @@
                 lastVoteTime = currentTime;
 
                 // Desabilita o botão por 5 segundos
-                document.getElementById('votarButton').disabled = true;
+                document.getElementById('votarNULOButton').disabled = true;
                 document.getElementById('message').innerText = 'Aguarde 5 segundos antes de votar novamente.';
 
                 setTimeout(function() {
-                    document.getElementById('votarButton').disabled = false;
+                    document.getElementById('votarNULOButton').disabled = false;
                     // Limpa a mensagem após 5 segundos
                     document.getElementById('message').innerText = '';
                 }, 5000);
