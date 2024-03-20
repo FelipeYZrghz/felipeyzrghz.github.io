@@ -212,6 +212,47 @@
                     document.getElementById('votarNULOButton').disabled = false;
                     // Limpa a mensagem após 5 segundos
                     document.getElementById('message').innerText = '';
+               
+                }, 5000);
+            } else {
+                alert('Aguarde pelo menos 5 segundos antes de votar novamente.');
+            }
+        }
+
+        // Adicione a função para votar
+        function submitVote() {
+            var currentTime = new Date().getTime();
+            // Verifica se passou pelo menos 5 segundos desde a última votação
+            if (currentTime - lastVoteTime >= 5000) {
+                // Verifica se um candidato foi escolhido
+                var selectedCandidate = document.getElementById('candidate').value;
+                if (!selectedCandidate || selectedCandidate === "") {
+                    alert('Escolha um candidato antes de votar.');
+                    return;
+                }
+
+                // Emite o som ao clicar
+                document.getElementById('votarSound').play();
+                
+                // Contabiliza o voto
+                const votingResults = JSON.parse(localStorage.getItem('votingResults')) || {};
+                votingResults[selectedCandidate] = (votingResults[selectedCandidate] || 0) + 1;
+                localStorage.setItem('votingResults', JSON.stringify(votingResults));
+
+                // Atualiza a tabela de resultados na outra página (você precisa implementar a outra página)
+                // updateResultsTable();
+
+                // Atualiza o tempo da última votação
+                lastVoteTime = currentTime;
+
+                // Desabilita o botão por 5 segundos
+                document.getElementById('votarButton').disabled = true;
+                document.getElementById('message').innerText = 'Aguarde 5 segundos antes de votar novamente.';
+
+                setTimeout(function() {
+                    document.getElementById('votarButton').disabled = false;
+                    // Limpa a mensagem após 5 segundos
+                    document.getElementById('message').innerText = '';
                 }, 5000);
             } else {
                 alert('Aguarde pelo menos 5 segundos antes de votar novamente.');
